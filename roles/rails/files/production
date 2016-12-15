@@ -1,0 +1,10 @@
+/path/to/xxx.log
+{
+    daily
+   missingok
+   compress
+   dateext
+    notifempty
+    rotate 90
+    copytruncate
+}

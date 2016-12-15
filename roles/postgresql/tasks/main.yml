@@ -1,0 +1,42 @@
+---
+- name: create user
+  user: name=postgres password={{ 'your_password' | password_hash('sha512') }}
+
+
+- name: install dependence
+  yum: name={{ item }}
+  with_items:
+      - readline-devel
+      - zlib-devel
+      - gcc
+
+- name: kernel args
+  script: kernel.sh >> kernel_log.txt
+  args:
+    creates: kernel_log.txt
+
+- name: copy limits.conf
+  copy: src=limits.conf dest=/etc/security/limits.conf
+
+
+- name: download postgresql
+  script: download.sh >> log.txt
+  args:
+    creates: log.txt
+
+- name: install postgresql
+  script: postgresql.sh >> postgresql_install_log.txt
+  args:
+    creates: postgres_install_log.txt
+
+- name: environment arguments
+  copy: src=.bash_profile dest=/home/postgres/.bash_profile
+
+- name: source
+  shell: source /home/postgres/.bash_profile
+  args:
+    executable: /bin/bash
+
+#- name: create dir
+#  file: path=/home/postgres/pgdata state=directory mode=0755 owner=postgres group=postgres
+

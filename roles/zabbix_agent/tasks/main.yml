@@ -1,0 +1,32 @@
+- name: install software
+  yum: name={{item}} state=latest
+  with_items:
+    - libcurl
+    - libcurl-devel
+
+- name: create zabbix user
+  user: name=zabbix state=present shell=/sbin/nologin
+
+- name: install zabbix_get
+  copy: src=bin/zabbix_get dest=/usr/local/bin/zabbix_get mode=0755
+
+- name: install zabbix_sender
+  copy: src=bin/zabbix_sender dest=/usr/local/bin/zabbix_sender mode=0755
+
+- name: install zabbix_agentd
+  copy: src=sbin/zabbix_agentd dest=/usr/local/sbin/zabbix_agentd mode=0755
+
+- name: create dir zabbix
+  file: path=/etc/zabbix state=directory mode=0755
+
+- name: create dir zabbix_agentd
+  file: path=/etc/zabbix/zabbix_agentd state=directory mode=0755
+
+- name: copy config
+  copy: src=zabbix_agentd.conf dest=/etc/zabbix/zabbix_agentd.conf
+
+
+- name: start zabbix service
+  shell: zabbix_agentd -c /etc/zabbix/zabbix_agentd.conf
+
+

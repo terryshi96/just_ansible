@@ -1,0 +1,13 @@
+---
+
+- name: create redis user
+  user: name=redis state=present shell=/sbin/nologin
+
+- name: copy redis.conf
+  copy: src=redis.conf dest=/etc/redis.conf
+
+- name: install redis
+  script: install_redis.sh >> redis_install_log.txt
+  args:
+    creates: redis_install_log.txt
+

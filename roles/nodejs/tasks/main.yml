@@ -1,0 +1,15 @@
+---
+- name: download nvm
+  remote_user: {{ app_user }}
+  script: install_nvm.sh >> download_log.txt
+  args:
+    creates: download.txt
+
+- name: source .bashrc
+  shell: source /home/{{ app_user }}/.bashrc
+  args:
+    executable: /bin/bash
+
+- name: install node
+  remote_user: {{ app_user }}
+  shell: nvm install {{ node }}

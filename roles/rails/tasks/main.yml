@@ -1,0 +1,58 @@
+---
+- name: install environment
+  yum:  name={{ item }}
+  with_items:
+     - nginx
+     - libxml2
+     - libxslt
+     - curl
+     - logrotate
+     - libyaml-devel
+     - autoconf
+     - gcc-c++
+     - readline-devel
+     - zlib-devel
+     - libffi-devel
+     - openssl-devel
+     - automake
+     - libtool
+     - bison
+     - sqlite-devel
+     - bzip2
+     - git
+     - ghostscript
+
+- name: generate ssh key
+  user: name={{ app_user }} generate_ssh_key=yes
+
+
+- name: install ivm && ruby
+  remote_user: {{ app_user }}
+  script: ../files/rails.sh >> log.txt
+  args:
+    creates: log.txt
+
+- name: environment arguments
+  copy: src=.bashrc dest=/home/{{ app_user }}/.bashrc
+
+- name: source
+  shell: source /home/{{ app_user }}/.bashrc
+  args:
+    executable: /bin/bash
+
+- name: environment arguments
+  copy: src=.bash_profile dest=/home/{{ app_user }}/.bash_profile
+
+- name: source
+  shell: source /home/{{ app_user }}/.bash_profile
+  args:
+    executable: /bin/bash
+
+- name: create dir
+  file: path=/www/{{ app_user }} state=directory mode=0755 owner={{ app_user }} group={{ app_user }}
+
+- name: rotate log
+  copy: src=production dest=/etc/logrotate.d/production
+
+- name: enable nginx
+  service: name=nginx state=started enabled=yes
