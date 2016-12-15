@@ -1,5 +1,5 @@
 # simple-ansible-playbooks
-simple ansible playbooks are easy to understand
+simple ansible playbooks for rails\postgresql\node\redis\zabbix_agent\docker etc.
 
 
 # install ansible
@@ -14,7 +14,7 @@ include common docker elk nodejs postgresql rails redis zabbix_agent
 ##usage
 
 
-- first of you should add your public key to servers
+- first of all you should add your public key to servers
 - add connect information to file hosts and push ssh key
 ```
 ansible-playbook ssh.yml
