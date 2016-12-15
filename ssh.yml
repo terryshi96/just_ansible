@@ -1,7 +1,9 @@
 ---
-- hosts: servers
-    user: {{ app_user }}
-    tasks:
-      - name: ssh-copy
-        authorized_key: user={{ app_user }} key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-        tags: - sshkey
+- name: send ssh key
+  hosts: test
+  remote_user: root
+  tasks:
+    - name: ssh-copy
+      authorized_key: user=root key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      tags:
+       - sshkey

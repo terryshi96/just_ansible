@@ -4,7 +4,8 @@ simple ansible playbooks for rails\postgresql\node\redis\zabbix_agent\docker etc
 
 # install ansible
 - pip install ansible
-- pip install passlib
+- pip install passlib (for password)
+- pip install distribute (for parse hosts)
 - ssh-keygen -t rsa
 
 
