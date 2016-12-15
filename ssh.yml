@@ -1,5 +1,5 @@
 ---
-- hosts: tomcat-servers
+- hosts: servers
     user: {{ app_user }}
     tasks:
       - name: ssh-copy
