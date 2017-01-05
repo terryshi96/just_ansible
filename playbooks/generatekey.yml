@@ -1,0 +1,7 @@
+---
+- name: generate ssh key
+  hosts: xxx
+  remote_user: {{ app_user }}
+  tasks:
+  - name: key
+    user: name=light generate_ssh_key=yes

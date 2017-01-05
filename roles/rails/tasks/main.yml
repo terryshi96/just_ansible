@@ -40,14 +40,6 @@
   args:
     executable: /bin/bash
 
-- name: environment arguments
-  copy: src=.bash_profile dest=/home/{{ app_user }}/.bash_profile
-
-- name: source
-  shell: source /home/{{ app_user }}/.bash_profile
-  args:
-    executable: /bin/bash
-
 - name: create dir
   file: path=/www/{{ app_user }} state=directory mode=0755 owner={{ app_user }} group={{ app_user }}
 
@@ -56,3 +48,11 @@
 
 - name: enable nginx
   service: name=nginx state=started enabled=yes
+
+- name: environment arguments
+  copy: src=.bash_profile dest=/home/{{ app_user }}/.bash_profile
+
+- name: source
+  shell: source /home/{{ app_user }}/.bash_profile
+  args:
+    executable: /bin/bash

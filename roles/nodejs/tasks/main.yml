@@ -12,4 +12,10 @@
 
 - name: install node
   remote_user: {{ app_user }}
-  shell: nvm install {{ node }}
+  shell: source /home/{{ app_user }}/.bashrc && nvm install {{ node }}
+  args:
+    executable: /bin/bash
+
+- name: install pm2
+  remote_user: {{ app_user }}
+  shell: npm install pm2 -g
