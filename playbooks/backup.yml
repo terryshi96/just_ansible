@@ -1,0 +1,6 @@
+---
+- name: auto install
+  hosts: db
+  remote_user: root
+  roles:
+   - backup

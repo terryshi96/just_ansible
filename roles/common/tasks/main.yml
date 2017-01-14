@@ -20,6 +20,7 @@
    - telnet
    - python-devel
    - git
+   - httpd
 
 - name: user add
   user: name={{ app_user }} password={{ 'your_password' | password_hash('sha512') }}
@@ -35,5 +36,3 @@
 - name: copy ssh config
   copy: src=sshd_config dest=/etc/ssh/sshd_config
   #notify: restart sshd
-
-
