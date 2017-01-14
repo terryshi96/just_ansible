@@ -21,7 +21,6 @@
    - python-devel
    - git
    - httpd
-   - ruby-json
    - facter
 
 - name: user add
