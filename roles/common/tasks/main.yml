@@ -21,6 +21,8 @@
    - python-devel
    - git
    - httpd
+   - ruby-json
+   - facter
 
 - name: user add
   user: name={{ app_user }} password={{ 'your_password' | password_hash('sha512') }}
