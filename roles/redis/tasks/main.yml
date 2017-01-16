@@ -3,11 +3,20 @@
 - name: create redis user
   user: name=redis state=present shell=/sbin/nologin
 
+- name: create dir
+  file: path=/www/redis state=directory mode=0755 owner=redis group=redis
+
+- name: create data dir
+  file: path=/www/redis/data state=directory mode=0755 owner=redis group=redis
+
 - name: copy redis.conf
   copy: src=redis.conf dest=/etc/redis.conf
 
 - name: copy redis.service
   copy: src=redis.service dest=/usr/lib/systemd/system/redis.service
+
+- name: copy redis.tgz
+  copy: src=redis-stable.tar.gz dest=/root/redis-stable.tar.gz
 
 - name: install redis
   script: install_redis.sh >> redis_install_log.txt
