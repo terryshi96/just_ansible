@@ -1,0 +1,36 @@
+    upstream {{ ruby_server_name }}.conf {
+        server {{ ruby_ip }}:{{ ruby_port }}   weight=10 max_fails=2 fail_timeout=30s;
+
+    }
+
+        log_format format_{{ ruby_server_name }}_80 '$remote_addr - $remote_port - {$request_time} - $remote_user [$time_local] ' '"$request" $status $body_bytes_sent ' '"$http_referer" "$http_user_agent"';
+    server {
+
+        listen   80 ;
+        server_name {{ ruby_server_name }};
+        #passenger_enabled on;
+        #charset koi8-r;
+
+        access_log  logs/{{ ruby_server_name }}.access.log format_{{ ruby_server_name }}_80;
+        #rails_env development;
+
+        root {{ ruby_root_path }};
+        location / {
+            proxy_set_header  X-Real-IP  $remote_addr;
+            proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+
+            if (-f $request_filename/index.html) {
+                rewrite (.*) $1/index.html break;
+            }
+            if (-f $request_filename.html) {
+                rewrite (.*) $1.html break;
+            }
+
+            if (!-f $request_filename) {
+                proxy_pass http://{{ ruby_server_name }}.conf;
+                break;
+            }
+        }
+    }

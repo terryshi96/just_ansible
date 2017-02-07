@@ -1,0 +1,17 @@
+# This is used for the nginx server configuration
+environments: 
+
+
+front_server_name:
+front_root_path:
+
+ruby_server_name:
+ruby_root_path:
+ruby_port: 25600
+ruby_ip: 127.0.0.1
+
+
+tomcat_server_name:
+tomcat_root_path: /var/lib/tomcat/webapps
+tomcat_port: 8081
+tomcat_ip: 127.0.0.1

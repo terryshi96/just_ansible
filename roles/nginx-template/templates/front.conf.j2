@@ -1,0 +1,83 @@
+log_format format_{{ front_server_name }}_80 '$remote_addr - $remote_port - {$request_time} - $remote_user [$time_local] ' '"$request" $status $body_bytes_sent ' '"$http_referer" "$http_user_agent"';
+  server {
+        listen       443 ssl;
+        server_name  {{ front_server_name }};
+        ssl                  on;
+        ssl_certificate      /etc/nginx/ssl/server.pem;
+        ssl_certificate_key   /etc/nginx/ssl/server.key;
+        ssl_session_timeout  5m;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers  ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
+        ssl_prefer_server_ciphers   on;
+        root   {{ front_root_path }};
+        index  index.html index.htm;
+        access_log  logs/{{ front_server_name }}.access.log format_{{ front_server_name }}_80;
+        location ^~ /api/ {
+            proxy_pass http://{{ ruby_ip }}:{{ ruby_port }};
+        }
+
+        location ^~ /oauth/ {
+            proxy_pass http://{{ ruby_ip }}:{{ ruby_port }};
+        }
+        location /{
+                proxy_set_header  X-Real-IP  $remote_addr;
+                proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $http_host;
+                proxy_redirect off;
+                if (-f $request_filename/index.html) {
+                    rewrite (.*) $1/index.html break;
+                }
+                if (-f $request_filename.html) {
+                    rewrite (.*) $1.html break;
+                }
+	}
+ }
+server {
+
+        listen   80 ;
+        server_name {{ front_server_name }};
+
+
+
+        access_log  logs/{{ front_server_name }}.access.log format_{{ front_server_name }}_80;
+        #rails_env development;
+        index index.html;
+        root {{ front_root_path }};
+
+	  #  if ( $http_user_agent ~ "(MIDP)|(WAP)|(UP.Browser)|(Smartphone)|(Obigo)|(Mobile)|(AU.Browser)|(wxd.Mms)|(WxdB.Browser)|(CLDC)|(UP.Link)|(KM.Browser)|(UCWEB)|(SEMC\-Browser)|(Mini)|(Symbian)|(Palm)|(Nokia)|(Panasonic)|(MOT\-)|(SonyEricsson)|(NEC\-)|(Alcatel)|(Ericsson)|(BENQ)|(BenQ)|(Amoisonic)|(Amoi\-)|(Capitel)|(PHILIPS)|(SAMSUNG)|(Lenovo)|(Mitsu)|(Motorola)|(SHARP)|(WAPPER)|(LG\-)|(LG/)|(EG900)|(CECT)|(Compal)|(kejian)|(Bird)|(BIRD)|(G900/V1.0)|(Arima)|(CTL)|(TDG)|(Daxian)|(DAXIAN)|(DBTEL)|(Eastcom)|(EASTCOM)|(PANTECH)|(Dopod)|(Haier)|(HAIER)|(KONKA)|(KEJIAN)|(LENOVO)|(Soutec)|(SOUTEC)|(SAGEM)|(SEC\-)|(SED\-)|(EMOL\-)|(INNO55)|(ZTE)|(iPhone)|(Android)|(Windows CE)|(Wget)|(Java)|(curl)|(Opera)" ) {
+#	rewrite ^/(.*) http://m.dit.baozhuang.com/$1 permanent;
+     #   }
+
+  rewrite   ^(.*) https://$host$1 permanent;
+        # location ^~ /api/ {
+        #     proxy_pass http://{{ ruby_ip }}:{{ ruby_port }};
+        # }
+        #
+        # location ^~ /oauth/ {
+        #     proxy_pass http://{{ ruby_ip }}:{{ ruby_port }};
+        # }
+
+  #      location / {
+
+  #      #        add_header Access-Control-Allow-Credentials true always;
+  #      #        add_header Access-Control-Allow-Origin '*' always;
+  #      #        add_header Access-Control-Allow-Headers 'x-requested-with,content-type,Cache-Control,Pragma,Date,x-timestamp' always;
+  #      #        add_header Access-Control-Allow-Methods 'POST,GET,OPTIONS,PUT,DELETE' always;
+  #      #        add_header Access-Control-Expose-Headers 'WWW-Authenticate,Server-Authorization' always;
+  #      #        add_header P3P 'policyref="/w3c/p3p.xml", CP="NOI DSP PSAa OUR BUS IND ONL UNI COM NAV INT LOC"' always;
+  #      #        if ( $request_method = OPTIONS ) {
+  #      #            return 200;
+  #      #        }
+  #              proxy_set_header  X-Real-IP  $remote_addr;
+  #              proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+  #              proxy_set_header Host $http_host;
+  #              proxy_redirect off;
+  #              if (-f $request_filename/index.html) {
+  #                  rewrite (.*) $1/index.html break;
+  #              }
+  #              if (-f $request_filename.html) {
+  #                  rewrite (.*) $1.html break;
+  #              }
+
+  #      }
+    }

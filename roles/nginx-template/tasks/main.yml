@@ -1,0 +1,16 @@
+---
+
+- name: Copy nginx configuration
+  template: src=front.conf.j2 dest=/etc/nginx/sites-enabled/{{ front_server_name }}.conf
+  notify: restart nginx
+  tags: front
+
+- name: Copy nginx configuration
+  template: src=ruby.conf.j2 dest=/etc/nginx/sites-enabled/{{ ruby_server_name }}.conf
+  notify: restart nginx
+  tags: ruby
+
+- name: Copy nginx configuration
+  template: src=tomcat.conf.j2 dest=/etc/nginx/sites-enabled/{{ tomcat_server_name }}.conf
+  notify: restart nginx
+  tags: tomcat

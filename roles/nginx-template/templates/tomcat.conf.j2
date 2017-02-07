@@ -1,0 +1,38 @@
+log_format format_{{ tomcat_server_name }}_80 '$remote_addr - $remote_port - {$request_time} - $remote_user [$time_local] ' '"$request" $status $body_bytes_sent ' '"$http_referer" "$http_user_agent"';
+  upstream {{ tomcat_server_name }} {
+      server {{ tomcat_ip }}:{{ tomcat_port }} weight=10;
+  }
+        server
+        {
+
+                listen       80;
+                server_name {{ tomcat_server_name }};
+                index index.jsp index.htm index.php;
+                root {{ tomcat_root_path }};
+                access_log  logs/{{ tomcat_server_name }}.access.log format_{{ tomcat_server_name }}_80;
+
+		     location ^~ /activiti-rest/ {
+                	proxy_pass http://{{ tomcat_ip }}:{{ tomcat_port }};
+        		root /var/lib/tomcat/webapps/activiti-rest;
+    		 }
+
+            location / {
+            proxy_set_header  X-Real-IP  $remote_addr;
+            proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+
+            if (-f $request_filename/index.html) {
+                rewrite (.*) $1/index.html break;
+            }
+            if (-f $request_filename.html) {
+                rewrite (.*) $1.html break;
+            }
+
+            if (!-f $request_filename) {
+                proxy_pass http://{{ tomcat_server_name }};
+                break;
+            }
+
+        }
+        }
