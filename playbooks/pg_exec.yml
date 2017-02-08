@@ -8,7 +8,7 @@
     src_database:
   tasks:
     - name: environment arguments
-      copy: src=../roles/postgres/files/.bash_profile dest=/root/.bash_profile
+      copy: src=../roles/postgresql/files/.bash_profile dest=/root/.bash_profile
 
     - name: source
       shell: source /root/.bash_profile
