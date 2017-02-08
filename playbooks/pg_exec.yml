@@ -1,11 +1,13 @@
 ---
 - name: operate postgresql
-  hosts: liuyangbao_test
+  hosts: 
   remote_user: root
   vars:
     pg_port: 5432
     pg_host: 127.0.0.1
-    src_database:
+    src_database: 
+    project: 
+    date: "0207"
   tasks:
     - name: environment arguments
       copy: src=../roles/postgresql/files/.bash_profile dest=/root/.bash_profile
@@ -21,23 +23,27 @@
        - python-psycopg2
 
     - name: create postgresql user
-      postgresql_user: name={{ item.key }}  password={{ item.value }}
+      postgresql_user: name={{ item.key }}  password={{ item.value }} login_host={{ pg_host }}
       with_items:
-      - {key: "",value: ""}
+       - {key: "",value: ""}
       tags: user
 
     - name: create database
-      postgresql_db: name={{ item.key }}  encoding='utf-8' owner={{ item.value }}
+      postgresql_db: name={{ item }}_{{ project }}_{{ date }}  encoding='utf-8' owner={{ item }}_{{ project }} login_host={{ pg_host }}
       with_items:
-      - {key: "",value: ""}
+       - uat
       tags: database
 
     - name: export data
-      shell: pg_dump -d {{ src_database }} -U postgres -h {{ pg_host }} -f {{ src_database }}.sql
+      shell: /opt/pgsql/bin/pg_dump -d {{ src_database }} -U postgres -h {{ pg_host }} -f {{ src_database }}.sql
+      args:
+        executable: /bin/bash
       tags: export
 
     - name: import data
-      shell: psql -U {{ item.key }} {{ item.value }} < {{ src_database }}.sql
+      shell: /opt/pgsql/bin/psql -U {{ item }}_{{ project }} {{ item }}_{{ project }}_{{ date }} -h {{ pg_host }} < {{ src_database }}.sql
+      args:
+        executable: /bin/bash
       with_items:
-      - {key: "",value: ""}
+       - uat
       tags: import
