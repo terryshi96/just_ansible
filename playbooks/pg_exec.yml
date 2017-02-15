@@ -1,13 +1,17 @@
 ---
 - name: operate postgresql
-  hosts: 
+  hosts:
   remote_user: root
   vars:
     pg_port: 5432
     pg_host: 127.0.0.1
-    src_database: 
-    project: 
-    date: "0207"
+    src_database:
+    project:
+    date:
+    env:
+      uat:
+        password:
+
   tasks:
     - name: environment arguments
       copy: src=../roles/postgresql/files/.bash_profile dest=/root/.bash_profile
@@ -23,15 +27,13 @@
        - python-psycopg2
 
     - name: create postgresql user
-      postgresql_user: name={{ item.key }}  password={{ item.value }} login_host={{ pg_host }}
-      with_items:
-       - {key: "",value: ""}
+      postgresql_user: name={{ item.key }}_{{ project }}  password={{ item.value.password }} login_host={{ pg_host }}
+      with_dict: "{{ vars.env }}"
       tags: user
 
     - name: create database
-      postgresql_db: name={{ item }}_{{ project }}_{{ date }}  encoding='utf-8' owner={{ item }}_{{ project }} login_host={{ pg_host }}
-      with_items:
-       - uat
+      postgresql_db: name={{ item.key }}_{{ project }}_{{ date }}  encoding='utf-8' owner={{ item.key }}_{{ project }} login_host={{ pg_host }}
+      with_dict: "{{ vars.env }}"
       tags: database
 
     - name: export data
@@ -40,10 +42,19 @@
         executable: /bin/bash
       tags: export
 
+
     - name: import data
-      shell: /opt/pgsql/bin/psql -U {{ item }}_{{ project }} {{ item }}_{{ project }}_{{ date }} -h {{ pg_host }} < {{ src_database }}.sql
+      shell: /opt/pgsql/bin/psql -U {{ item.key }}_{{ project }} {{ item.key }}_{{ project }}_{{ date }} -h {{ pg_host }} < {{ src_database }}.sql
       args:
         executable: /bin/bash
-      with_items:
-       - uat
+      with_dict: "{{ vars.env }}"
       tags: import
+
+    - name: add ip
+      shell: echo "host {{ item.key }}_{{ project }}_{{ date }} {{ item.key }}_{{ project }} 0.0.0.0/0 md5" >> /home/postgres/pgdata/data/pg_hba.conf
+      with_dict: "{{ vars.env }}"
+      tags: hba
+
+    - name: reload
+      shell: su - postgres -c "/opt/pgsql/bin/pg_ctl -D /home/postgres/pgdata/data reload"
+      tags: reload

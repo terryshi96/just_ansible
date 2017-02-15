@@ -1,0 +1,20 @@
+---
+
+- name: user add
+  user: name={{ local_user }} password={{ '' | password_hash('sha512') }}
+
+- name: generate key
+  user: name{{ local_user }} generate_ssh_key=yes
+
+- name: add sudo
+  lineinfile: dest=/etc/sudoers state=present  line='{{ item }}' validate='visudo -cf %s'
+  with_items:
+   - "{{ local_user }} ALL=(ALL) NOPASSWD: ALL"
+   - "Defaults: {{ local_user }}  !requiretty"
+
+- name: send ssh key
+  tasks:
+    - name: ssh-copy
+      authorized_key: user={{ local_user }} key="{{ lookup('file', '/Users/user/.ssh/id_rsa.pub') }}"
+      tags:
+       - sshkey

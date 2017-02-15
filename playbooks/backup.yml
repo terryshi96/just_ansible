@@ -1,6 +1,17 @@
 ---
 - name: auto install
-  hosts: db
+  hosts:
   remote_user: root
+  vars:
+    oas_id:
+    oas_key:
+    oas_host:
+    config:
+      prod:
+        password:
+        username:
+        bucket:
+
   roles:
+   - python
    - backup

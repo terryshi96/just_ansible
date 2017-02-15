@@ -1,0 +1,4 @@
+
+#config for redis
+data_path: /www/redis
+password:

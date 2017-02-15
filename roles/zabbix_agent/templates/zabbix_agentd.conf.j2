@@ -1,0 +1,9 @@
+HostnameItem={{ hostname }}
+Include=/etc/zabbix/zabbix_agentd
+Server={{ zabbix_server }}
+EnableRemoteCommands=1
+PidFile=/tmp/zabbix_agentd.pid
+LogFile=/tmp/zabbix_agentd.log
+LogRemoteCommands=1
+ListenPort={{ listen_port }}
+Timeout=3

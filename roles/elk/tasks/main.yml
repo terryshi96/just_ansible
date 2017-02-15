@@ -2,5 +2,9 @@
 
 - name: copy filebeat
   copy: src=filebeat-1.2.3-x86_64.rpm dest=/root/filebeat-1.2.3-x86_64.rpm
+
 - name: install
   shell: rpm -ivh /root/filebeat-1.2.3-x86_64.rpm
+
+- name: copy config
+  template: src=filebeat.yml.j2 dest=/etc/filebeat/filebeat.yml

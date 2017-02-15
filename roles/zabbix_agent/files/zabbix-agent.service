@@ -1,0 +1,15 @@
+[Unit]
+Description=Zabbix Monitor Agent
+After=network.target
+
+[Service]
+Type=simple
+Environment="CONFIG=/etc/zabbix/zabbix_agentd.conf"
+EnvironmentFile=-/etc/sysconfig/zabbix-agent
+ExecStart=/usr/local/sbin/zabbix_agentd -c ${CONFIG} -f
+ExecStop=/bin/kill ${MAINPID}
+KillMode=process
+User=zabbix
+
+[Install]
+WantedBy=multi-user.target

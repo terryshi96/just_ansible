@@ -4,13 +4,13 @@
   user: name=redis state=present shell=/sbin/nologin
 
 - name: create dir
-  file: path=/www/redis state=directory mode=0755 owner=redis group=redis
+  file: path={{ data_path }} state=directory mode=0755 owner=redis group=redis
 
 - name: create data dir
-  file: path=/www/redis/data state=directory mode=0755 owner=redis group=redis
+  file: path={{ data_path }}/data state=directory mode=0755 owner=redis group=redis
 
 - name: copy redis.conf
-  copy: src=redis.conf dest=/etc/redis.conf
+  template: src=redis.conf.j2 dest=/etc/redis.conf
 
 - name: copy redis.service
   copy: src=redis.service dest=/usr/lib/systemd/system/redis.service

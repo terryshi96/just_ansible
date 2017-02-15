@@ -1,0 +1,14 @@
+---
+- name: auto install
+  hosts:
+  remote_user: root
+  vars:
+      env:
+          sit:
+            password: ''
+            port1: '8081'
+            port2: '8001'
+
+  roles:
+  - activiti
+

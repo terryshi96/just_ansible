@@ -1,16 +1,16 @@
 ---
 
-- name: copy get-pip.py
-  copy: src=get-pip.py dest=/root/get-pip.py
-
-- name: install pip
-  shell: python get-pip.py
+# - name: copy get-pip.py
+#   copy: src=get-pip.py dest=/root/get-pip.py
+#
+# - name: install pip
+#   shell: python get-pip.py
 
 - name: install sdk
-  shell: pip install oassdk
+  shell: pip3 install oassdk
 
 - name: config  oascmd
-  shell: oascmd.py config --host=cn-hangzhou.oas-internal.aliyuncs.com -i <access> -k <key>
+  shell: oascmd.py config --host={{ oas_host }} -i {{ oas_id }} -k {{ oas_key }}
   become: true
   become_user: postgres
 
@@ -18,13 +18,13 @@
   file: path=/home/postgres/pgdata/back state=directory mode=0755 owner=postgres group=postgres
 
 - name: create data dir
-  file: path=/home/postgres/pgdata/back/{{ item }} state=directory mode=0755 owner=postgres group=postgres
-  with_items:
-   - xxxxx
-   - yyyyy
+  file: path=/home/postgres/pgdata/back/{{ item.key }} state=directory mode=0755 owner=postgres group=postgres
+  with_dict: "{{ vars.config }}"
 
 - name: copy back_web.py
-  copy: src=back_web.py dest=/home/postgres/pgdata/back/back_web.py owner=postgres group=postgres mode=0777
+  template: src=back_web.py.j2 dest=/home/postgres/pgdata/back/back_web.py owner=postgres group=postgres mode=0777
+  with_items: "{{ config | list }}"
+  tags: copy_back
 
 - name: copy back_web.sh
   copy: src=back_web.sh dest=/home/postgres/pgdata/back/back_web.sh owner=postgres group=postgres mode=0777

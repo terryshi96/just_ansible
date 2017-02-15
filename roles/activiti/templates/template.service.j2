@@ -1,0 +1,15 @@
+[Unit]
+Description=Apache Tomcat 7
+After=network.target
+[Service]
+Type=oneshot
+ExecStart=/www/activiti/{{ item.key }}_activiti/bin/startup.sh
+ExecStop=/www/activiti/{{ item.key }}_activiti/bin/shutdown.sh
+RemainAfterExit=yes
+User=tomcat
+Group=tomcat
+[Install]
+WantedBy=multi-user.target
+
+
+

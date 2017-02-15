@@ -23,10 +23,10 @@
   file: path=/etc/zabbix/zabbix_agentd state=directory mode=0755
 
 - name: copy config
-  copy: src=zabbix_agentd.conf dest=/etc/zabbix/zabbix_agentd.conf
+  template: src=zabbix_agentd.conf.j2 dest=/etc/zabbix/zabbix_agentd.conf
 
+- name: add service
+  copy: src=zabbix-agent.service dest=/usr/lib/systemd/system/zabbix-agent.service
 
 - name: start zabbix service
   shell: zabbix_agentd -c /etc/zabbix/zabbix_agentd.conf
-
-

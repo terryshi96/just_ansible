@@ -1,0 +1,6 @@
+db={{ item.key }}_{{ project }}_{{ date }}
+jdbc.driver=com.mysql.jdbc.Driver
+#jdbc.driver=org.postgresql.Driver
+jdbc.url=jdbc:mysql://localhost:3306/{{ item.key }}_{{ project }}_{{ date }}
+jdbc.username={{ item.key }}_{{ project }}
+jdbc.password={{ item.value.password }}

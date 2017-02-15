@@ -1,0 +1,4 @@
+#config for ssh
+ssh_port:
+passwordauth: no
+root_login: yes

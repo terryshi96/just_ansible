@@ -1,6 +1,6 @@
 ---
 - name: create user
-  user: name=postgres password={{ 'your_password' | password_hash('sha512') }}
+  user: name=postgres password={{ '' | password_hash('sha512') }}
 
 
 - name: install dependence
@@ -37,6 +37,9 @@
   args:
     executable: /bin/bash
 
-#- name: create dir
-#  file: path=/home/postgres/pgdata state=directory mode=0755 owner=postgres group=postgres
+- name: create dir
+  file: path=/home/postgres/pgdata state=directory mode=0755 owner=postgres group=postgres
+
+- name: copy config
+  template: src=postgresql.conf.j2 dest=/home/postgres/pgdata/data/postgresql.conf
 

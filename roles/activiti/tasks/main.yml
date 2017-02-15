@@ -1,0 +1,100 @@
+---
+
+- name: install depentence
+  yum: name={{ item }} state=latest
+  with_items:
+    - MySQL-python
+
+- name: create database
+  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=present encoding=utf8 login_user=root login_password=''
+  with_dict: "{{ vars.env }}"
+  tags: database
+
+- name: create user database grant
+  mysql_user: name={{ item.key }}_{{ project }} password='{{ item.value.password }}' priv={{ item.key }}_{{ project }}_{{ date }}.*:ALL state=present login_user=root login_password=''
+  with_dict: "{{ vars.env }}"
+  tags: user
+
+- name: copy sql file
+  copy: src={{ item }} dest=/tmp/{{ item }}
+  with_items:
+    - activiti.mysql.create.identity.sql
+    - activiti.mysql55.create.engine.sql
+    - activiti.mysql55.create.history.sql
+
+#- name: import identity
+#  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql.create.identity.sql login_user=root login_password=''
+#  with_dict: "{{ vars.env }}"
+#
+#- name: import engine
+#  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql55.create.engine.sql login_user=root login_password=''
+#  with_dict: "{{ vars.env }}"
+#
+#- name: import history
+#  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql55.create.history.sql login_user=root login_password=''
+#  with_dict: "{{ vars.env }}"
+
+#- name: create tomcat user
+#  user: name=tomcat state=present shell=/sbin/nologin
+
+- name: create dir
+  file: path=/www/activiti state=directory mode=0755 owner=tomcat group=tomcat
+  tags: dir
+
+- name: download tomcat
+  script: install_tomcat.sh >> log.txt
+  args:
+    creates: log.txt
+
+- name: download activiti war
+  shell: install_activiti.sh >> log_activiti.txt
+  args:
+    creates: log_activiti.txt
+
+- name: copy database connector
+  copy: src=mysql-connector-java-5.1.27.jar dest={{ item }}/mysql-connector-java-5.1.27.jar
+  with_items:
+  - /root/activiti-rest/WEB-INF/lib
+  - /root/activiti-explorer/WEB-INF/lib
+
+- name: copy activiti dir
+  shell: cp -r {{ item }} /www/activiti/apache-tomcat-{{ tomcat_version }}/webapps/
+  with_items:
+  - activiti-rest
+  - activiti-explorer
+  tags: copy_activiti
+
+- name: copy dir
+  shell: cp -r /www/activiti/apache-tomcat-{{ tomcat_version }} /www/activiti/{{ item.key }}_activiti
+  with_dict: "{{ vars.env }}"
+  tags: activiti_dir
+
+- name: config explorer database
+  template: src=db.properties.j2 dest=/www/activiti/{{ item.key }}_activiti/webapps/activiti-explorer/WEB-INF/classes/db.properties
+  with_dict: "{{ vars.env }}"
+  #notify: restart tomcat
+  tags: explorer_config
+
+- name: config rest database
+  template: src=db.properties.j2 dest=/www/activiti/{{ item.key }}_activiti/webapps/activiti-rest/WEB-INF/classes/db.properties
+  with_dict: "{{ vars.env }}"
+  #notify: restart tomcat
+  tags: rest_config
+
+- name: copy tomcat config
+  template: src=server.xml.j2 dest=/www/activiti/{{ item.key }}_activiti/conf/server.xml
+  with_dict: "{{ vars.env }}"
+  tags: tomcat_config
+
+- name: chown dir
+  file: path=/www/activiti/{{ item.key }}_activiti owner=tomcat group=tomcat state=directory recurse=yes
+  with_dict: "{{ vars.env }}"
+  tags: activiti_owner
+
+- name: add systemd service
+  template: src=template.service.j2 dest=/usr/lib/systemd/system/{{ item.key }}_activiti.service
+  with_dict: "{{ vars.env }}"
+
+- name: start activiti
+  service: name={{vars.env}}_activiti state=started enabled=yes
+  with_dict: "{{ vars.env }}"

@@ -1,0 +1,144 @@
+dynamic_shared_memory_type = posix	# the default is the first option
+					# supported by the operating system:
+
+				# (change requires restart)
+wal_keep_segments = {{ wal_keep_segments }} # in logfile segments, 16MB each; 0 disables
+wal_sender_timeout = 60s	# in milliseconds; 0 disables
+
+log_timezone = 'PRC'
+
+datestyle = 'iso, mdy'
+#intervalstyle = 'postgres'
+timezone = 'PRC'
+
+# These settings are initialized by initdb, but they can be changed.
+lc_messages = 'C'			# locale for system error message
+					# strings
+lc_monetary = 'C'			# locale for monetary formatting
+lc_numeric = 'C'			# locale for number formatting
+lc_time = 'C'				# locale for time formatting
+
+# default configuration for text search
+default_text_search_config = 'pg_catalog.english'
+
+
+
+#------------------------------------------------------------------------------
+# CUSTOMIZED OPTIONS
+#------------------------------------------------------------------------------
+
+# Add settings for extensions here
+# 监听所有IPv4地址
+listen_addresses='0.0.0.0'
+
+# 最大允许 1000 歌=个连接（测试环境100个就够了，加大连接数的同时需要调整shared buffer）
+max_connections={{ max_connections }}
+
+# 默认的unix socket 放在/tmp，修改为$PGDATA，以确保本地访问的安全性
+unix_socket_directories='.'
+
+# 默认的访问权限是0777，修改为 0700 更加安全
+unix_socket_permissions=0700
+
+# TCP会话心跳包在Linux下面默认是2小时。如果已经修改了系统的内核参数，则不需要修改这里。为了防止客户端和服务端之间的网络设备主动关闭空闲的TCP会话，需要设置以下参数。
+tcp_keepalives_idle=60
+tcp_keepalives_interval=10
+tcp_keepalives_count=6
+
+# 大的shared_buffers需要大的checkpoint_segments，同时需要申请更多的System V共享系统资源，并增加共享内存管理的开销。这个只不需要设置太大。因为postgreSQL还依赖操作系统的文件系统cache来提高读性能。另外，写操作频繁的数据库这个值设置太大反而会增加checkpoint压力。在9.4版本中会增加 mmap 以及huge page table的支持以减少内存管理的开销。
+shared_buffers={{ shared_buffers }}
+
+# 这个值越大，VACUUM，CREATE INDEX的操作会越快，当然大道一定程度瓶颈就不在内存了，可能是CPU（例如创建索引的操作）。这个值是一个操作的内存使用的上限，而不是一次性被分配出去的。并且注意，如果开起了autovacuum，最大可能有autovacuum_max_workers*maintenance_work_mem 的内存被消耗到。
+maintenance_work_mem=1GB
+
+# 一般设置的比系统限制的略少，ulimit -a:stack size
+max_stack_depth=8MB
+
+# 手动执行vacuum操作时，默认是没有停顿执行到底的，为了防止VACUUM操作消耗太多的数据库服务器硬件资源，这个值是指在消耗多少资源后停顿多少时间，以便其他的操作可以使用更多的硬件资源
+vacuum_cost_delay=10ms
+# vacuum_cost_page_hit=1  # 0-10000 credits
+# vacuum_cost_page_miss=10 # 0-10000 credits
+# vacumm_cost_page_dirty=20 # 0-10000 credits
+vacuum_cost_limit=10000
+
+# 默认的 bgwrite 进程执行一次会停顿 200ms 再被唤醒执行下一次操作，当数据库的写操作很频繁的时候，200ms 可能太长，导致其它的进程需要花费过多的时间来进行 bgwrite 操作。短暂的停顿更有利于 shared buffer 中的脏块flush到磁盘，降低backend主动flush以申请共享内存的情形。
+bgwriter_delay=10ms
+
+# 如果需要做数据库WAL日志备份的话至少需要设置成archive的级别，如果需要设置hot_standby那么需要设置成hot_standby，由于这个值修改需要重启数据库，所以先设置成hot_standby比较好。当然hot_standby意味着WAL记录的更加详细，如果没有打算做hot_standby，设置的越低，性能越好。
+wal_level=hot_standby
+
+# wal buffer 默认是 -1，根据shared_buffer的设置自动调整 shared_buffer*3%。最大限制是XLOG的segment_size。
+wal_buffers=16384kB
+
+max_wal_size=1536MB
+
+# 这个和checkpoint_segments的效果是一样的，只是触发的条件是时间条件
+checkpoint_timeout=5min
+
+# 归档参数的修改也需要重启数据库，所以可以先打开
+archive_mode=on
+
+# wal_level=hot_standby
+
+# 调用归档时候执行的命令,建议使用归档存储
+ archive_command='/bin/ls'
+
+# 如果要做 hot standby这个必须大于0，并且修改之后要重启数据库，所以先设置为 32。表示允许多少个和流复制相关联的连接。
+max_wal_senders=8
+
+# 这个是standby数据库的参数，为了方便角色切换，一般把所有的数据都设置为on的。
+hot_standby=on
+
+# 这个参数是说数据库中随机的PAGE访问开销占seq_page_cost的多少倍，seq_page_cost默认是1。其他的开销都是seq_page_cost的倍数。这些都用于基于成本的执行计划选择。
+random_page_cost=2.0
+
+# CPU 相关的成本因子，如果内存足够大，大部分数据都在内存中的话，可以适当调大以下参数。使得数据块扫描的成本和CPU的成本更接近。
+# cpu_tuple_cost=0.01
+# cpu_index_tuple_cost=0.005
+# cpu_operator_cost=0.0025
+
+# effective_cache_size只是个度量值，不是实际分配使用的内存值。表示系统有多少内存可以作为操作系统的cache。越大的话，数据库越倾向于使用index这种适合random访问的执行计划。一般设置为内存大小减去数据库的shared_buffer再减去系统和其他软件所需要的内存。
+effective_cache_size=1200MB
+
+# 下面是输出日志的配置
+log_destination='csvlog'
+logging_collector=on
+
+
+log_directory='/home/postgres/pgdata/data/pg_log' # 需要提前创建这个目录，并赋予相应的写权限
+log_truncate_on_rotation=on
+log_rotation_age=1d
+log_rotation_size=10MB
+
+# 这个参数调整的是记录执行时间超过1s的SQL到日志中，一般用于跟踪哪些SQL执行时间长。
+log_min_duration_statement=10s
+
+# 记录每一次checkpint到日志中。
+log_checkpoints=on
+
+# 记录锁等待超过1s的操作，一般用于排查业务逻辑上的问题
+log_lock_waits=on
+deadlock_timeout=1s
+
+# 记录连接和端口连接，可以反映短连接问题，也可以作为连接审计日志。
+log_connections=on
+log_disconnections=on
+
+# 打开代码位置信息的输出，可以反映日志信息输出自哪个代码的什么函数。在会话中可以使用 \set VERBOSITY verbose开启。
+log_error_verbosity=verbose
+
+# 记录DDL语句，但是需要注意的是，创建用户，修改密码的语句也会被记录，所以敏感的SQL执行前建议在会话中关闭这个审计。
+log_statement='ddl'
+
+# 查询的长度为 2048，越大消耗的内存会越大
+track_activity_query_size=2048
+
+# 默认autovacuum及时打开的，log_autovacuum_min_duration=0记录所有的autovacuum操作。
+autovacuum=on
+log_autovacuum_min_duration=0
+#autovacuum_max_workers=4
+# 这个模块用于收集SQL层面的统计信息，如SQL被执行了多少次，总共耗时，IO耗时，命中率等。一般用于发现业务上最频繁调用的SQL是什么，有针对性的进行SQL优化。
+shared_preload_libraries = 'pg_stat_statements'
+#custom_variable_classes = 'pg_stat_statements'
+pg_stat_statements.max = 1000
+pg_stat_statements.track = all

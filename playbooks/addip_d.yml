@@ -1,0 +1,14 @@
+---
+- name: add ip to pg_ctl.conf
+  hosts: database
+  remote_user: postgres
+  vars:
+    database:
+    user:
+  tasks:
+  - name: add ip
+    shell: echo "host {{ database }} {{user}} {{ item }}/32 md5" >> /home/postgres/pgdata/data/pg_hba.conf
+    with_items:
+     -
+  - name: reload
+    shell: /opt/pgsql/bin/pg_ctl -D /home/postgres/pgdata/data reload

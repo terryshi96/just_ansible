@@ -1,21 +1,24 @@
 ---
 - name: download nvm
-  remote_user: {{ app_user }}
-  script: install_nvm.sh >> download_log.txt
-  args:
-    creates: download.txt
+ remote_user: {{ local_user }}
+ script: install_nvm.sh >> download_log.txt
+ args:
+   creates: download.txt
 
 - name: source .bashrc
-  shell: source /home/{{ app_user }}/.bashrc
+  remote_user: {{ local_user }}
+  shell: source /home/{{ local_user }}/.bashrc
   args:
     executable: /bin/bash
 
 - name: install node
-  remote_user: {{ app_user }}
-  shell: source /home/{{ app_user }}/.bashrc && nvm install {{ node }}
+  remote_user: {{ local_user }}
+  shell: source /home/{{ local_user }}/.bashrc && nvm install {{ node }}
   args:
     executable: /bin/bash
+  tags: node
 
 - name: install pm2
-  remote_user: {{ app_user }}
+  remote_user: {{ local_user }}
   shell: npm install pm2 -g
+  tags: pm2

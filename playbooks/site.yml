@@ -1,12 +1,9 @@
 ---
 - name: auto install
-  hosts: test
+  hosts:
   remote_user: root
   roles:
-  - common
-  - rails
-  - postgresql
-  - docker
-  - nodejs
-  - redis
-  - zabbix_agent
+  #- postgresql
+  #- redis
+  - activiti
+

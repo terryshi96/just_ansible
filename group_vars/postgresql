@@ -1,0 +1,4 @@
+#config for postgresql
+wal_keep_segments: 1000
+max_connections: 1000
+shared_buffers: 4GB

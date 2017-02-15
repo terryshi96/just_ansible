@@ -1,0 +1,25 @@
+---
+- name: nginx config
+  hosts:
+  remote_user: root
+  vars:
+    environments:
+    domain:
+    ruby_project:
+    front_project:
+    tomcat_project:
+    ruby_port:
+    ruby_ip:
+    tomcat_port:
+    tomcat_ip:
+
+    front_server_name: '{{ environments }}.{{ domain }}'
+    front_root_path: /www/atyun/{{ front_project }}/{{ environments }}/dist
+    ruby_server_name: '{{ environments }}.{{ ruby_project }}.{{ domain }}'
+    ruby_root_path: /www/atyun/apps/{{ ruby_project }}/ruby/{{ environments }}.{{ ruby_project }}.{{ domain }}/{{ environments }}/current/public
+    tomcat_server_name: '{{ environments }}.{{ tomcat_project }}.{{ domain }}'
+    tomcat_root_path: /www/{{ tomcat_project }}/{{ environments }}_{{ tomcat_project }}/webapps
+
+
+  roles:
+  - nginx_template

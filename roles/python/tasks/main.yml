@@ -1,0 +1,11 @@
+---
+- name: install dependents
+  yum: name={{ item }}
+  with_items:
+   - python34
+   - python34-devel
+   - python34-pip
+
+- name: install virtualenv
+  shell: pip3 install virtualenv
+  tags: vir

@@ -1,0 +1,14 @@
+---
+
+- name: copy pip
+  copy: src=get-pip.py dest=/root/get-pip.py
+
+
+- name: install docker
+  script: docker_install.sh >> docker_install_log.txt
+  args:
+    creates: docker_install_log.txt
+
+
+- name: install compose
+  shell: pip3 install -U docker-compose
