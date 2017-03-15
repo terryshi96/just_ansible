@@ -8,3 +8,9 @@
 
 - name: install compose
   shell: pip3 install -U docker-compose
+
+- name: add docker group
+  group: name=docker state=present
+
+- name: add user to docker group
+  user: name={{ docker_user }} group=docker

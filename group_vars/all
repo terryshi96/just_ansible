@@ -6,9 +6,4 @@ project: activiti
 date: "0207"
 tomcat_version: 7.0.75
 
-
-
-
-
-
-
+docker_user
