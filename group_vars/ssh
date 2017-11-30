@@ -1,4 +1,4 @@
 #config for ssh
-ssh_port:
+ssh_port: 22
 passwordauth: no
 root_login: yes

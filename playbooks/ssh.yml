@@ -1,4 +1,5 @@
 ---
+# 用于批量添加公钥到服务器
 - name: send ssh key
   hosts:
   remote_user: root

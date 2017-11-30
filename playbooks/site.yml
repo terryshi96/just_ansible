@@ -1,4 +1,5 @@
 ---
+# 通用playbook 用于选定的role
 - name: auto install
   hosts:
   remote_user: root
