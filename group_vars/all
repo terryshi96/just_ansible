@@ -8,3 +8,20 @@ date: "0207"
 tomcat_version: 7.0.75
 
 docker_user
+
+#config for postgresql
+wal_keep_segments: 1000
+max_connections: 1000
+shared_buffers: 4GB
+
+#config for redis
+data_path: /www/redis
+password:
+
+#config for ssh
+ssh_port: 22
+passwordauth: no
+root_login: yes
+
+zabbix_server: 127.0.0.1
+listen_port: 10050
