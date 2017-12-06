@@ -48,6 +48,9 @@
 - name: create dir
   file: path=/etc/nginx/sites-enabled state=directory
 
+- name: create dir
+  file: path=/etc/nginx/logs state=directory
+
 - name: nginx config
   copy: src=nginx.conf dest=/etc/nginx/nginx.conf
 
