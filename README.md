@@ -9,10 +9,10 @@ simple ansible playbooks for rails\postgresql\node\redis\zabbix_agent\docker etc
 - ssh-keygen -t rsa
 
 
-##roles
-include common docker elk nodejs postgresql rails redis zabbix_agent
+## roles
+include common docker elk nodejs postgresql rails redis zabbix_agent etc..
 
-##usage
+## usage
 
 
 - first of all you should add your public key to servers
