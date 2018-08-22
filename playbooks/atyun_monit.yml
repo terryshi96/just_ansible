@@ -1,0 +1,8 @@
+---
+- name: auto install monit
+  hosts: 
+  remote_user: root
+  roles:
+  - user
+  - nodejs
+  - python

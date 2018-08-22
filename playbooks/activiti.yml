@@ -1,14 +1,13 @@
 ---
 - name: auto install
-  hosts:
+  hosts: 
   remote_user: root
   vars:
       env:
-          sit:
-            password: ''
-            port1: '8081'
-            port2: '8001'
-
+          sit2:
+            password: 
+            port1: '8085'
+            port2: '8006'
   roles:
   - activiti
 

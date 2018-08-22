@@ -6,12 +6,12 @@
     - MySQL-python
 
 - name: create database
-  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=present encoding=utf8 login_user=root login_password=''
+  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=present encoding=utf8 login_user=root login_password='ZbJ@xUr89tASGQmd'
   with_dict: "{{ vars.env }}"
   tags: database
 
 - name: create user database grant
-  mysql_user: name={{ item.key }}_{{ project }} password='{{ item.value.password }}' priv={{ item.key }}_{{ project }}_{{ date }}.*:ALL state=present login_user=root login_password=''
+  mysql_user: name={{ item.key }}_{{ project }} password='{{ item.value.password }}' priv={{ item.key }}_{{ project }}_{{ date }}.*:ALL state=present login_user=root login_password='ZbJ@xUr89tASGQmd'
   with_dict: "{{ vars.env }}"
   tags: user
 
@@ -22,20 +22,22 @@
     - activiti.mysql55.create.engine.sql
     - activiti.mysql55.create.history.sql
 
-#- name: import identity
-#  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql.create.identity.sql login_user=root login_password=''
-#  with_dict: "{{ vars.env }}"
-#
-#- name: import engine
-#  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql55.create.engine.sql login_user=root login_password=''
-#  with_dict: "{{ vars.env }}"
-#
-#- name: import history
-#  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql55.create.history.sql login_user=root login_password=''
-#  with_dict: "{{ vars.env }}"
+- name: import identity
+  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql.create.identity.sql login_user=root login_password='ZbJ@xUr89tASGQmd'
+  with_dict: "{{ vars.env }}"
 
-#- name: create tomcat user
-#  user: name=tomcat state=present shell=/sbin/nologin
+- name: import engine
+  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql55.create.engine.sql login_user=root login_password='ZbJ@xUr89tASGQmd'
+  with_dict: "{{ vars.env }}"
+
+- name: import history
+  mysql_db: name={{ item.key }}_{{ project }}_{{ date }} state=import target=/tmp/activiti.mysql55.create.history.sql login_user=root login_password='ZbJ@xUr89tASGQmd'
+  with_dict: "{{ vars.env }}"
+
+- name: create tomcat user
+  user: name=tomcat state=present shell=/sbin/nologin
+
+
 
 - name: create dir
   file: path=/www/activiti state=directory mode=0755 owner=tomcat group=tomcat

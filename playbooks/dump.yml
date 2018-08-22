@@ -1,0 +1,40 @@
+---
+- name: operate postgresql
+  hosts: 
+  remote_user: root
+  vars:
+    pg_port: 5432
+    pg_host: 127.0.0.1
+    src_database: 
+    dest_database: 
+    dest_user: 
+    date: 
+
+  tasks:
+    - name: environment arguments
+      copy: src=../roles/postgresql/files/.bash_profile dest=/root/.bash_profile
+
+    - name: source
+      shell: source /root/.bash_profile
+      args:
+        executable: /bin/bash
+
+    - name: install dependents
+      yum: name={{ item }}
+      with_items:
+       - python-psycopg2
+
+    - name: drop database
+      postgresql_db: name={{ dest_database }} state=absent login_host={{ pg_host }}
+
+    - name: export data
+      shell: /opt/pgsql/bin/pg_dump -d {{ src_database }} -U postgres -h {{ pg_host }} -f {{ src_database }}.{{ date }}.sql
+      args:
+        executable: /bin/bash
+    - name: create database
+      postgresql_db: name={{ dest_database }}  encoding='utf-8' owner={{ dest_user }} login_host={{ pg_host }}
+
+    - name: import data
+      shell: /opt/pgsql/bin/psql -U {{ dest_user }} {{ dest_database }} -h {{ pg_host }} < {{ src_database }}.{{ date }}.sql
+      args:
+        executable: /bin/bash

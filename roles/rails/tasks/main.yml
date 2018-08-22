@@ -21,6 +21,9 @@
      - sqlite-devel
      - bzip2
      - ghostscript
+     - mysql-devel
+     - libxslt-devel
+     - libxml2-devel
 
 - name: generate ssh key
   user: name={{ app_user }} generate_ssh_key=yes
@@ -49,13 +52,15 @@
   file: path=/etc/nginx/sites-enabled state=directory
 
 - name: create dir
+  file: path=/etc/nginx/ssl state=directory
+- name: create dir
   file: path=/etc/nginx/logs state=directory
 
 - name: nginx config
   copy: src=nginx.conf dest=/etc/nginx/nginx.conf
 
-- name: rotate log
-  copy: src=production dest=/etc/logrotate.d/production
+#- name: rotate log
+#  copy: src=production dest=/etc/logrotate.d/production
 
 - name: enable nginx
   service: name=nginx state=started enabled=yes

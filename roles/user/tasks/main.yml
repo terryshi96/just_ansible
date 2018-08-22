@@ -1,4 +1,3 @@
-# 创建用户 生成密钥对 赋予sudo 并将本地公钥添加
 ---
 
 - name: user add
@@ -16,6 +15,6 @@
 - name: send ssh key
   tasks:
     - name: ssh-copy
-      authorized_key: user={{ local_user }} key="{{ lookup('file', '/Users/user/.ssh/id_rsa.pub') }}"
+      authorized_key: user={{ local_user }} key="{{ lookup('file', '/Users/atyun/.ssh/id_rsa.pub') }}"
       tags:
        - sshkey

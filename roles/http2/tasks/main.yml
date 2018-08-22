@@ -1,0 +1,21 @@
+---
+- name: install dependents
+  yum: name={{ item }}
+  with_items:
+   - pcre-devel
+   - zlib-devel
+
+- name: update openssl
+  script: openssl.sh >> openssl_log.txt
+  args:
+    creates: openssl_log.txt
+
+- name: install brotli.sh
+  script: brotli.sh >> brotli.txt
+  args:
+    creates: brotli.txt
+
+- name: update nginx
+  script: nginx.sh >> nginx_log.txt
+  args:
+    creates: nginx_log.txt

@@ -21,9 +21,22 @@
    - python-devel
    - git
    - httpd
+   - fontconfig
+   - google-crosextra-carlito-fonts.noarch
+   - google-crosextra-caladea-fonts.noarch
+   - jemalloc-devel
 
 - name: user add
   user: name={{ common_user }} password={{ '' | password_hash('sha512') }}
+
+
+- name: ssh-copy
+  authorized_key: user={{ local_user }} key="{{ lookup('file', '/Users/atyun/.ssh/id_rsa.pub') }}"
+  tags:
+    - sshkey
+
+- name: change_lang
+  shell: localectl set-locale LANG=zh_CN.utf8
 
 - name: install nginx repo
   copy: src=nginx.repo   dest=/etc/yum.repos.d/nginx.repo
@@ -34,3 +47,11 @@
   template: src=sshd_config.j2 dest=/etc/ssh/sshd_config
   tags: ssh
   notify: restart sshd
+
+- lvg: vg=data pvs=/dev/vdb
+
+- lvol: vg=data lv=data size=450g
+
+- name: create www
+  file: path=/www state=directory
+

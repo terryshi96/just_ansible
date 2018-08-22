@@ -7,7 +7,7 @@ front_root_path:
 
 ruby_server_name:
 ruby_root_path:
-ruby_port:
+ruby_port: 25600
 ruby_ip: 127.0.0.1
 
 

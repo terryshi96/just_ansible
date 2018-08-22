@@ -6,13 +6,13 @@
 # - name: install pip
 #   shell: python get-pip.py
 
-- name: install sdk
-  shell: pip3 install oassdk
-
-- name: config  oascmd
-  shell: oascmd.py config --host={{ oas_host }} -i {{ oas_id }} -k {{ oas_key }}
-  become: true
-  become_user: postgres
+#- name: install sdk
+#  shell: pip3 install oassdk
+#
+#- name: config  oascmd
+#  shell: oascmd.py config --host={{ oas_host }} -i {{ oas_id }} -k {{ oas_key }}
+#  become: true
+#  become_user: postgres
 
 - name: create back dir
   file: path=/home/postgres/pgdata/back state=directory mode=0755 owner=postgres group=postgres

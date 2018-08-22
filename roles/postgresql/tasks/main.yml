@@ -3,6 +3,11 @@
   user: name=postgres password={{ '' | password_hash('sha512') }}
 
 
+- name: ssh-copy
+  authorized_key: user=postgres key="{{ lookup('file', '/Users/atyun/.ssh/id_rsa.pub') }}"
+  tags:
+    - sshkey
+
 - name: install dependence
   yum: name={{ item }}
   with_items:
@@ -23,7 +28,8 @@
   script: download.sh >> log.txt
   args:
     creates: log.txt
-
+# 运行多条命令可以 shell command script
+# script可以记录日志且避免重复执行 command不支持|
 - name: install postgresql
   script: postgresql.sh >> postgresql_install_log.txt
   args:
@@ -38,8 +44,21 @@
     executable: /bin/bash
 
 - name: create dir
-  file: path=/home/postgres/pgdata state=directory mode=0755 owner=postgres group=postgres
+  file: path=/www/pgdata state=directory mode=0755 owner=postgres group=postgres
+
+# 注意添加公钥，并注意权限情况
+# - name: init
+#   become_user: postgres
+#   shell: /opt/pgsql/bin/initdb -D /www/pgdata/data
+
 
 - name: copy config
-  template: src=postgresql.conf.j2 dest=/home/postgres/pgdata/data/postgresql.conf
+  become_user: postgres
+  template: src=postgresql.conf.j2 dest=/www/pgdata/data/postgresql.conf
+
+
+- name: ln
+  become_user: postgres
+  shell: ln -s /www/pgdata /home/postgres/pgdata
+
 

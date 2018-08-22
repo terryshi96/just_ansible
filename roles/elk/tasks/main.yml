@@ -1,10 +1,28 @@
 ---
+  vars:
+    path: 
+    tag: 
+    index: 
+    bulk_max_size: "500"
+    host:
+    username:
+    password:
+#- name: copy filebeat
+#  copy: src=filebeat-1.2.3-x86_64.rpm dest=/root/filebeat-1.2.3-x86_64.rpm
+#
+#- name: install
+#  shell: rpm -ivh /root/filebeat-1.2.3-x86_64.rpm
 
-- name: copy filebeat
-  copy: src=filebeat-1.2.3-x86_64.rpm dest=/root/filebeat-1.2.3-x86_64.rpm
+- name: install repo
+  copy: src=elastic.repo dest=/etc/yum.repos.d/elastic.repo
 
-- name: install
-  shell: rpm -ivh /root/filebeat-1.2.3-x86_64.rpm
+- name: install public signing key
+  shell: rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
+
+- name: install filebeat
+  yum: name=filebeat
 
 - name: copy config
   template: src=filebeat.yml.j2 dest=/etc/filebeat/filebeat.yml
+  notify: restart filebeat
+

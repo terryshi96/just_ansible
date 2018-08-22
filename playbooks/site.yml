@@ -1,10 +1,14 @@
 ---
-# 通用playbook 用于选定的role
 - name: auto install
-  hosts:
+  hosts: 
   remote_user: root
   roles:
-  #- postgresql
-  #- redis
-  - activiti
+#   将公钥添加到 root账户 并挂载磁盘
+  #  - common
+  #  - redis
+  #  - postgresql
+#    - backup
+   - rails
+#    - telegraf
+#    - nodejs
 

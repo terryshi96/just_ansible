@@ -1,10 +1,9 @@
 ---
-# 用于批量添加公钥到服务器
 - name: send ssh key
-  hosts:
+  hosts: 
   remote_user: root
   tasks:
     - name: ssh-copy
-      authorized_key: user=postgres key="{{ lookup('file', '/Users/user/.ssh/id_rsa.pub') }}"
+      authorized_key: user=postgres key="{{ lookup('file', '/Users/atyun/.ssh/id_rsa.pub') }}"
       tags:
        - sshkey

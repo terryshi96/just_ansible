@@ -10,11 +10,11 @@
 # possible, but leave them commented.  Uncommented options change a
 # default value.
 
-{{ ssh_port }}
-#Port 22
+Port {{ ssh_port }}
+Port 22
 #AddressFamily any
 ListenAddress 0.0.0.0:{{ ssh_port }}
-#ListenAddress 0.0.0.0:22
+ListenAddress 0.0.0.0:22
 #ListenAddress ::
 
 # Disable legacy (protocol version 1) support in the server for new
@@ -46,7 +46,7 @@ SyslogFacility AUTHPRIV
 #MaxAuthTries 6
 #MaxSessions 10
 
-RSAAuthentication yes
+#RSAAuthentication yes
 PubkeyAuthentication yes
 AuthorizedKeysFile	.ssh/authorized_keys
 #AuthorizedKeysCommand none
@@ -65,8 +65,8 @@ AuthorizedKeysFile	.ssh/authorized_keys
 # To disable tunneled clear text passwords, change to no here!
 #PasswordAuthentication yes
 #PermitEmptyPasswords no
-PasswordAuthentication {{ passwordauth }}
-PermitRootLogin {{ root_login }}
+PasswordAuthentication no
+PermitRootLogin yes
 
 # Change to no to disable s/key passwords
 #ChallengeResponseAuthentication yes

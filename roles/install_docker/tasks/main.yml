@@ -1,10 +1,10 @@
 ---
 
 - name: install docker
-  shell: curl -sSL https://get.daocloud.io/docker | sh
+  script: docker_install.sh >> docker_install_log.txt
+  args:
+    creates: docker_install_log.txt
 
-- name: change mirror
-  shell: curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://016ad500.m.daocloud.io
 
 - name: install compose
   shell: pip3 install -U docker-compose

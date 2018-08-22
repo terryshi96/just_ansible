@@ -1,17 +1,17 @@
 ---
 - name: nginx config
-  hosts:
+  hosts: 
   remote_user: root
   vars:
-    environments:
-    domain:
-    ruby_project:
-    front_project:
-    tomcat_project:
-    ruby_port:
-    ruby_ip:
-    tomcat_port:
-    tomcat_ip:
+    environments: 
+    domain: 
+    ruby_project: 
+    front_project: 
+    tomcat_project: activiti
+    ruby_port: 25800
+    ruby_ip: 127.0.0.1
+    tomcat_port: 8085
+    tomcat_ip: 127.0.0.1
 
     front_server_name: '{{ environments }}.{{ domain }}'
     front_root_path: /www/atyun/{{ front_project }}/{{ environments }}/dist

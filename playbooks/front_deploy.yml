@@ -1,0 +1,17 @@
+---
+- name: deploy front project
+  hosts: 
+  remote_user: 
+  vars:
+      project_name: 
+      branch: 
+      project_path: /www/atyun/{{ project_name }}/{{ branch }}
+  tasks:
+  - name: upload
+    copy: src=dist.tgz dest={{ project_path }}/dist.tgz
+  - name: check dir
+    file: path={{ project_path }}/dist state=directory mode=755
+  - name: backup dir
+    shell: mv {{ project_path }}/dist {{project_path}}/dist.bak
+  - name: unzip
+    shell: cd dest={{ project_path }} && tar -zxf dist.tgz

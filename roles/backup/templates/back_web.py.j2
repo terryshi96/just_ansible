@@ -21,7 +21,7 @@ LOG_FILE = 'test_db.log'
 backup_dir = '/home/postgres/pgdata/back/'
 
 # 设置保留备份的天数,其余的上传到阿里云存储, 其余通过基础备份的方式上传至阿里云归档存储
-keep_back_archive = 3
+keep_back_archive = 14
 
 # 文件时间戳
 file_time = time.strftime('%Y_%m_%d_%H', time.localtime(time.time()))
@@ -52,7 +52,7 @@ def loghandler(func):
 def back_db():
     for item in db_config.keys():
         os.environ['PGPASSWORD'] = db_config[item]['password']
-        call('pg_dump -E UTF8 --username={username} --dbname={database} --compress=9 -f {back_db_dir}/{time}.sql.gz'.format(
+        call('pg_dump -E UTF8 --username={username} --dbname={database} --compress=9 -f {back_db_dir}/{username}_{time}.sql.gz'.format(
             database=db_config[item]['database'],
             back_db_dir=os.path.join(backup_dir, db_config[item]['database']),
             username=db_config[item]['username'],
@@ -89,10 +89,11 @@ def clean_dir():
 @loghandler
 def up_load_to_oas():
     for item in db_config.keys():
-        call('cd {back_db_dir}; oascmd.py upload oas://{bucket} {time}.sql.gz'.format(
+        call('cd {back_db_dir}; /usr/local/sbin/ossutil cp {username}_{time}.sql.gz oss://{bucket}'.format(
             back_db_dir=os.path.join(backup_dir, db_config[item]['database']),
             database=db_config[item]['database'],
             bucket=db_config[item]['bucket'],
+            username=db_config[item]['username'],
             time=file_time
         ), shell=True)
 
