@@ -61,4 +61,10 @@
   become_user: postgres
   shell: ln -s /www/pgdata /home/postgres/pgdata
 
+- name: copy start script
+  copy: src=postgresql dest=/etc/init.d/postgresql mode=0755
+
+- name: other
+  shell: chkconfig --add postgresql
+
 
