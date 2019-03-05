@@ -1,16 +1,23 @@
 ---
+- name: install environment
+  yum: name={{ item }}
+  with_items:
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+
+- name: install repo
+  shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
 - name: install docker
-  script: docker_install.sh >> docker_install_log.txt
-  args:
-    creates: docker_install_log.txt
+  yum: name={{ item }}
+  with_items:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
 
+- name: install docker-compose
+  shell: curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
 
-- name: install compose
-  shell: pip3 install -U docker-compose
-
-- name: add docker group
-  group: name=docker state=present
-
-- name: add user to docker group
-  user: name={{ docker_user }} group=docker
+- name: install docker-machine
+  shell: base=https://github.com/docker/machine/releases/download/v0.16.0 && curl -L $base/docker-machine-$(uname -s)-$(uname -m) >/usr/local/bin/docker-machine && chmod +x /usr/local/bin/docker-machine
