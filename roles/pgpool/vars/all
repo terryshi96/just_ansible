@@ -5,3 +5,5 @@ primary_ip: '127.0.0.1'
 standby_ip: '127.0.0.1'
 num_init_children: 256
 postgres_password: 'xxxxxxxxx'
+
+archivedir: '/home/postgres/pgdata/back/archdir'

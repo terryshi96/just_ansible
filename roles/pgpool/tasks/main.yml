@@ -22,7 +22,13 @@
 
 - name: copy config
   template: src=pgpool.conf.j2 dest=/etc/pgpool-II/pgpool.conf
-  
+
+- name: copy failover.sh
+  template: src=failover.sh.j2 dest=/etc/pgpool-II/failover.sh mode='0777'
+
+- name: copy follow_master.sh
+  template: src=follow_master.sh.j2 dest=/etc/pgpool-II/follow_master.sh mode='0777'
+
 - name: enable pgpool
   service: 
     name: pgpool

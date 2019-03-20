@@ -435,7 +435,7 @@ connect_timeout = 10000
 # FAILOVER AND FAILBACK
 #------------------------------------------------------------------------------
 
-failover_command = ''
+failover_command = '/etc/pgpool-II/failover.sh %d %h %p %D %m %H %M %P %r %R'
                                    # Executes this command at failover
                                    # Special values:
                                    #   %d = node id
@@ -449,7 +449,7 @@ failover_command = ''
 								   #   %r = new master port number
 								   #   %R = new master database cluster path
                                    #   %% = '%' character
-failback_command = ''
+failback_command = '/etc/pgpool-II/follow_master.sh %d %h %p %D %m %M %H %P %r %R'
                                    # Executes this command at failback.
                                    # Special values:
                                    #   %d = node id
