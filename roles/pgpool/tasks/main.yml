@@ -1,0 +1,31 @@
+---
+- name: install repo
+  shell: yum install http://www.pgpool.net/yum/rpms/4.0/redhat/rhel-{{ centos_version }}-x86_64/pgpool-II-release-4.0-1.noarch.rpm
+
+- name: install pgpool
+  yum: name={{ item }}
+  with_items:
+      - "{{ version}}"
+      - "{{ version}}-debuginfo" 
+      - "{{ version}}-devel"
+      - "{{ version}}-extensions"
+
+- name: change syslog config
+  lineinfile:
+    path: /etc/rsyslog.conf
+    line: 'local0.*    /var/log/pgpool.log'
+
+- name: restart syslog
+  service: 
+    name: rsyslog 
+    state: restarted
+
+- name: copy config
+  template: src=pgpool.conf.j2 dest=/etc/pgpool-II/pgpool.conf
+  
+- name: enable pgpool
+  service: 
+    name: pgpool
+    enabled: yes
+
+
