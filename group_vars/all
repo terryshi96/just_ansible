@@ -1,5 +1,6 @@
 #目录下为针对某个主机组的配置  all为针对所有主机组的配置
 
+teleport_user:
 common_user: 
 app_user: 
 local_user: 

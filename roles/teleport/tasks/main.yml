@@ -1,0 +1,52 @@
+---
+
+- name: create dir
+ file: path=/www/teleport state=directory mode=0755
+
+- name: copy teleport.conf
+ template: src=teleport.yaml.j2 dest=/etc/teleport.yaml
+
+- name: copy service
+ copy: src=teleport.service dest=/etc/systemd/system/teleport.service
+
+- name: user add
+ user: name={{ teleport_user }} password={{ 'xxxx' | password_hash('sha512') }}
+ tags:
+   - node
+
+- name: generate key
+ user: name={{ teleport_user }} generate_ssh_key=yes
+ tags:
+   - node
+
+- name: copy tgz
+  copy: src=teleport-v3.2.2-linux-amd64-bin.tar.gz dest=/root/teleport-v3.2.2-linux-amd64-bin.tar.gz
+  tags:
+    - node
+
+- name: install teleport
+  script: install_teleport.sh >> teleport_install_log.txt
+  args:
+    creates: teleport_install_log.txt
+  tags:
+    - node
+
+- name: copy id_rsa.pub
+  shell: cat /home/{{ teleport_user }}/.ssh/id_rsa.pub >> /home/xxx/.ssh/authorized_keys
+  tags:
+    - node
+
+- name: copy bashrc
+  copy: src=.bashrc dest=/home/{{ teleport_user }}/.bashrc
+  tags:
+    - node
+
+- name: copy bash_profile
+  copy: src=.bash_profile dest=/home/{{ teleport_user }}/.bash_profile
+  tags:
+    - node
+
+- name: join cluster
+  shell: teleport start --roles=node --token=xxxx--ca-pin=xxxx --auth-server=xxxx:3025 &
+  tags:
+    - node
