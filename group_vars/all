@@ -4,6 +4,7 @@ teleport_user:
 common_user: 
 app_user: 
 local_user: 
+volume: 200g
 node: '8.9.0'
 project: activiti
 date: "0307"

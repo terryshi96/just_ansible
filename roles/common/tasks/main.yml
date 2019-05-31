@@ -48,10 +48,22 @@
   tags: ssh
   notify: restart sshd
 
-- lvg: vg=data pvs=/dev/vdb
 
-- lvol: vg=data lv=data size=450g
+- name: create pv
+  lvg: vg=data pvs=/dev/vdb
 
-- name: create www
-  file: path=/www state=directory
+- name: create lv
+  lvol: vg=data lv=data size={{ volume }}
+
+- name: Create a ext4 filesystem
+  filesystem:
+    fstype: ext4
+    dev: /dev/mapper/data-data
+
+- name: mount disk
+  mount:
+    path: /www
+    src: /dev/mapper/data-data
+    fstype: ext4
+    state: mounted
 
