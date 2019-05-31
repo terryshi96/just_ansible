@@ -1,0 +1,4 @@
+{
+    "registry-mirrors": ["https://2h3po24q.mirror.aliyuncs.com/"],
+    "storage-driver": "overlay2"
+  }

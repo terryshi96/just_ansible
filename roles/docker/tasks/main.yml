@@ -21,3 +21,18 @@
 
 - name: install docker-machine
   shell: base=https://github.com/docker/machine/releases/download/v0.16.0 && curl -L $base/docker-machine-$(uname -s)-$(uname -m) >/usr/local/bin/docker-machine && chmod +x /usr/local/bin/docker-machine
+
+- name: create dir
+  file: path=/etc/docker state=directory
+
+- name: copy config
+  copy: src=daemon.json dest=/etc/docker/daemon.json
+
+- name: add group
+  user:
+    name: {{ common_user }}
+    groups: docker
+    append: yes
+
+- name: enable docker
+  service: name=docker state=started enabled=yes

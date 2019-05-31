@@ -1,0 +1,32 @@
+---
+- name: download key
+  script: download_key.sh >> rabbitmq.txt
+  args:
+    creates: rabbitmq.txt
+
+- name: install erlang repo
+  copy: src=erlang.repo   dest=/etc/yum.repos.d/erlang.repo
+
+- name: install rabbitmq repo
+  copy: src=rabbitmq.repo   dest=/etc/yum.repos.d/rabbitmq.repo
+
+- name: install dependents
+  yum: name={{ item }}
+  with_items:
+    - erlang
+    - rabbitmq-server
+
+- name: copy config
+  template: src=rabbitmq.conf.j2 dest=/etc/rabbitmq/rabbitmq.conf
+
+- name: copy env
+  copy: src=rabbitmq-env.conf dest=/etc/rabbitmq/rabbitmq-env.conf
+
+- name: create dir
+  file: path=/www/rabbitmq state=directory mode=0755 owner=rabbitmq group=rabbitmq
+
+- name: enable plugins
+  shell: rabbitmq-plugins enable rabbitmq_management && rabbitmq-plugins enable rabbitmq_mqtt
+
+- name: enable rabbitmq-server
+  service: name=rabbitmq-server state=started enabled=yes

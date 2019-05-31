@@ -22,3 +22,6 @@
   script: install_redis.sh >> redis_install_log.txt
   args:
     creates: redis_install_log.txt
+
+- name: enable redis
+  service: name=redis state=started enabled=yes

@@ -29,9 +29,11 @@
 - name: user add
   user: name={{ common_user }} password={{ '' | password_hash('sha512') }}
 
+- name: generate ssh key
+  user: name={{ app_user }} generate_ssh_key=yes
 
 - name: ssh-copy
-  authorized_key: user={{ local_user }} key="{{ lookup('file', '/Users/atyun/.ssh/id_rsa.pub') }}"
+  authorized_key: user={{ local_user }} key="{{ lookup('file', '/Users/xxxx/.ssh/id_rsa.pub') }}"
   tags:
     - sshkey
 
@@ -48,12 +50,11 @@
   tags: ssh
   notify: restart sshd
 
-
 - name: create pv
   lvg: vg=data pvs=/dev/vdb
 
 - name: create lv
-  lvol: vg=data lv=data size={{ volume }}
+  lvol: vg=data lv=data size={{ volume}}
 
 - name: Create a ext4 filesystem
   filesystem:
@@ -66,4 +67,3 @@
     src: /dev/mapper/data-data
     fstype: ext4
     state: mounted
-
