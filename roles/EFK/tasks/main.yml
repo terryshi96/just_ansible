@@ -1,0 +1,43 @@
+---
+  # vars:
+  #   path: "/www/atyun/apps/camp/ruby/kjds.com/production/shared/log/production.log"
+  #   tag: "boko"
+  #   index: "boko"
+  #   bulk_max_size: "500"
+  #   host:
+  #   username: elastic
+  #   password:
+# - name: copy filebeat
+#  copy: src=filebeat-1.2.3-x86_64.rpm dest=/root/filebeat-1.2.3-x86_64.rpm
+
+# - name: install
+#  shell: rpm -ivh /root/filebeat-1.2.3-x86_64.rpm
+
+- name: install repo
+  copy: src=elastic7.repo dest=/etc/yum.repos.d/elastic.repo
+
+- name: install public signing key
+  # shell: rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
+  shell: rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: install filebeat
+  yum: name=filebeat
+
+- name: enable filebeat
+  service: name=filebeat state=started enabled=yes
+
+- name: copy config
+  template: src=filebeat.yml.j2 dest=/etc/filebeat/filebeat.yml
+  notify: restart filebeat
+
+- name: install elastic
+  yum: name=elasticsearch
+
+- name: create dir
+  file: path=/www/elasticsearch state=directory mode=0755 owner=elasticsearch group=elasticsearch
+
+- name: copy config
+  template: src=elasticsearch.yml.j2 dest=/etc/elasticsearch/elasticsearch.yml
+
+- name: enable elastic
+  service: name=elasticsearch state=started enabled=yes

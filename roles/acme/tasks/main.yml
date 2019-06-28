@@ -1,0 +1,14 @@
+---
+- name: install acme 
+  shell: curl  https://get.acme.sh | sh
+
+- name: source
+  shell: source /root/.bashrc
+  args:
+    executable: /bin/bash
+
+- name: update acme 
+  shell: /root/.acme.sh/acme.sh  --upgrade  --auto-upgrade
+
+- name: copy ssl.sh
+  copy: src=ssl.sh dest=/usr/local/sbin/ssl.sh mode=0755

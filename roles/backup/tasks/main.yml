@@ -13,6 +13,9 @@
 #  shell: oascmd.py config --host={{ oas_host }} -i {{ oas_id }} -k {{ oas_key }}
 #  become: true
 #  become_user: postgres
+- name: install ossutil
+  shell: wget http://gosspublic.alicdn.com/ossutil/1.6.3/ossutil64 && chmod 755 ossutil64 && mv ossutil64 /usr/local/sbin/ossutil  
+
 
 - name: create back dir
   file: path=/home/postgres/pgdata/back state=directory mode=0755 owner=postgres group=postgres
@@ -25,6 +28,7 @@
   template: src=back_web.py.j2 dest=/home/postgres/pgdata/back/back_web.py owner=postgres group=postgres mode=0777
   with_items: "{{ config | list }}"
   tags: copy_back
+
 
 - name: copy back_web.sh
   copy: src=back_web.sh dest=/home/postgres/pgdata/back/back_web.sh owner=postgres group=postgres mode=0777
